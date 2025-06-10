@@ -2,11 +2,7 @@ import pygame
 import random
 
 from sprites import Monster, Robot, Door, Coin
-
-WIDTH, HEIGHT = 800, 600
-
-# Colors
-BLACK = (0, 0, 0)
+import config
 
 
 class InDarkness:
@@ -19,8 +15,8 @@ class InDarkness:
         pygame.init()
 
         # Window variables
-        self.width = WIDTH
-        self.height = HEIGHT
+        self.width = config.WIDTH
+        self.height = config.HEIGHT
         self.window = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("In Darkness")
         pygame.display.set_icon(Monster.sprite)
@@ -51,7 +47,7 @@ class InDarkness:
                 exit()
 
     def draw_window(self):
-        self.window.fill(BLACK)
+        self.window.fill(config.BLACK)
         self.monster.render(self.window)
         pygame.display.flip()
 

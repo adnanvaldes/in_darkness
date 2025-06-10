@@ -1,0 +1,9 @@
+# GLOBAL VARIABLES
+
+WIDTH, HEIGHT = 800, 600
+
+# Colors
+BLACK = (0, 0, 0)
+
+# Monster
+PLAYER_SPEED = 5
