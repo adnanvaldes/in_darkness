@@ -1,5 +1,7 @@
 import pygame
 import math
+import random
+
 import config
 
 
@@ -21,9 +23,9 @@ class Sprite:
     width = 0
     height = 0
 
-    def __init__(self, x: int = 0, y: int = 0):
-        self.x = x
-        self.y = y
+    def __init__(self):
+        self.x = random.randint(0, config.WIDTH - self.width)
+        self.y = random.randint(0, config.HEIGHT - self.height)
 
     def render(self, window):
         window.blit(self.sprite, (self.x, self.y))
@@ -47,10 +49,11 @@ class Monster(Sprite):
     width = sprite.get_width()
     height = sprite.get_height()
 
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self):
+        self.x = config.WIDTH / 2 - Monster.width
+        self.y = config.HEIGHT / 2 - Monster.height
         self.speed = config.PLAYER_SPEED
-        self.movement = MOVEMENT_KEYS
+        self.movement = config.MOVEMENT_KEYS
         self.left = False
         self.right = False
         self.down = False
@@ -100,6 +103,37 @@ class Robot(Sprite):
     sprite = load_scaled("src/robot.png")
     width = sprite.get_width()
     height = sprite.get_height()
+
+    def __init__(self):
+        self.speed = config.ROBOT_SPEED
+        self.patrol = random.choice(["x_axis", "y_axis"])
+
+        spawn_edge = random.choice(["top", "bottom", "left", "right"])
+
+        if spawn_edge == "top":
+            self.x = random.randint(0, config.WIDTH - self.width)
+            self.y = 0
+        elif spawn_edge == "bottom":
+            self.x = random.randint(0, config.WIDTH - self.width)
+            self.y = config.HEIGHT - self.height
+        elif spawn_edge == "left":
+            self.x = 0
+            self.y = random.randint(0, config.HEIGHT - self.height)
+        elif spawn_edge == "right":
+            self.x = config.WIDTH - self.width
+            self.y = random.randint(0, config.HEIGHT - self.height)
+
+    def update(self):
+        if self.patrol == "x_axis":
+            new_x = self.x + self.speed
+            if new_x <= 0 or new_x >= config.WIDTH - self.width:
+                self.speed *= -1
+            self.x = self.x_on_screen(self.x + self.speed)
+        else:
+            new_y = self.y + self.speed
+            if new_y <= 0 or new_y >= config.HEIGHT - self.height:
+                self.speed *= -1
+            self.y = self.y_on_screen(self.y + self.speed)
 
 
 class Coin(Sprite):
