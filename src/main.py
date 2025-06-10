@@ -38,13 +38,15 @@ class InDarkness:
         """
         while True:
             self.check_events()
+            self.monster.update()
             self.draw_window()
-            self.clock.tick()
+            self.clock.tick(60)
 
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
+            self.monster.move(event)
 
     def draw_window(self):
         self.window.fill(config.BLACK)
