@@ -27,7 +27,9 @@ class InDarkness:
 
         # Game variables
         self.clock = pygame.time.Clock()
-        self.monster = Monster()
+        self.monster = Monster(
+            self.width / 2 - Monster.width, self.height / 2 - Monster.height
+        )
         self.coins = []
         self.robots = []
         self.doors = []
