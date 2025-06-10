@@ -38,6 +38,9 @@ class Sprite:
     def y_on_screen(self, new_y):
         return max(0, min(new_y, config.HEIGHT - type(self).height))
 
+    def get_rect(self):
+        return pygame.Rect(self.x, self.y, type(self).width, type(self).height)
+
 
 class Monster(Sprite):
     """
