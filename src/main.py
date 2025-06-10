@@ -42,16 +42,28 @@ class Robot(Sprite):
     """
 
     sprite = pygame.image.load("src/robot.png")
+    width = sprite.get_width()
+    height = sprite.get_height()
 
 
-class Objects(Sprite):
+class Coin:
     """
-    Class to implement objects, which the Monster can interact with
-    These can be either coins or doors.
+    Class to implement coins
     """
 
-    coin_sprite = pygame.image.load("src/coin.png")
-    door_sprite = pygame.image.load("src/door.png")
+    sprite = pygame.image.load("src/coin.png")
+    width = sprite.get_width()
+    height = sprite.get_height()
+
+
+class Coin:
+    """
+    Class to implement doors
+    """
+
+    sprite = pygame.image.load("src/door.png")
+    width = sprite.get_width()
+    height = sprite.get_height()
 
 
 class InDarkness:
@@ -63,13 +75,19 @@ class InDarkness:
     def __init__(self):
         pygame.init()
 
+        # Window variables
         self.width = WIDTH
         self.height = HEIGHT
         self.window = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("In Darkness")
         pygame.display.set_icon(Monster.sprite)
 
+        # Game variables
+        self.clock = pygame.time.Clock()
         self.monster = Monster()
+        self.coins = []
+        self.robots = []
+        self.doors = []
 
         self.main_loop()
 
@@ -80,6 +98,7 @@ class InDarkness:
         while True:
             self.check_events()
             self.draw_window()
+            self.clock.tick()
 
     def check_events(self):
         for event in pygame.event.get():
