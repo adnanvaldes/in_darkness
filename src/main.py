@@ -23,12 +23,15 @@ class InDarkness:
 
         # Game variables
         self.clock = pygame.time.Clock()
-        self.monster = Monster(
-            self.width / 2 - Monster.width, self.height / 2 - Monster.height
-        )
-        self.coins = []
+        self.timer = 0
+        self.next_spawn = random.randint(0, 120)
+
+        # Sprite variables
+        self.monster = Monster()
         self.robots = []
+        self.coins = []
         self.doors = []
+        self.sprites = [self.robots, self.coins, self.doors]
 
         self.main_loop()
 
@@ -37,8 +40,9 @@ class InDarkness:
         Main loop of the game
         """
         while True:
+            self.timer += 1
             self.check_events()
-            self.monster.update()
+            self.update_sprites()
             self.draw_window()
             self.clock.tick(60)
 
@@ -51,7 +55,29 @@ class InDarkness:
     def draw_window(self):
         self.window.fill(config.BLACK)
         self.monster.render(self.window)
+        for sprite_type in self.sprites:
+            for entity in sprite_type:
+                entity.render(self.window)
         pygame.display.flip()
+
+    def add_robot(self):
+        if len(self.robots) < config.MAX_ROBOTS and self.timer >= self.next_spawn:
+            self.robots.append(Robot())
+            self.reset_spawn_timer()
+
+    def reset_spawn_timer(self):
+        self.next_spawn = random.randint(30, 120)
+        self.timer = 0
+
+    def update_sprites(self):
+        # add entities
+        self.add_robot()
+
+        # Update entities
+        self.monster.update()
+        for sprite_type in self.sprites:
+            for entity in sprite_type:
+                entity.update()
 
 
 if __name__ == "__main__":
