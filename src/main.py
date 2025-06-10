@@ -50,6 +50,7 @@ class InDarkness:
         self.height = HEIGHT
         self.window = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("In Darkness")
+        pygame.display.set_icon(Monster.sprite)
 
         self.main_loop()
 
