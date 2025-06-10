@@ -12,8 +12,18 @@ class Monster:
     """
 
     sprite = pygame.image.load("src/monster.png")
+    width = sprite.get_width()
+    height = sprite.get_height()
 
-    pass
+    def __init__(self):
+        self.x = (WIDTH / 2) - self.width
+        self.y = (HEIGHT / 2) - self.height
+
+    def update(self):
+        pass
+
+    def render(self, window):
+        window.blit(self.sprite, (self.x, self.y))
 
 
 class Robot:
@@ -52,6 +62,8 @@ class InDarkness:
         pygame.display.set_caption("In Darkness")
         pygame.display.set_icon(Monster.sprite)
 
+        self.monster = Monster()
+
         self.main_loop()
 
     def main_loop(self):
@@ -69,6 +81,8 @@ class InDarkness:
 
     def draw_window(self):
         self.window.fill(BLACK)
+        self.monster.render(self.window)
+        pygame.display.flip()
 
 
 if __name__ == "__main__":
