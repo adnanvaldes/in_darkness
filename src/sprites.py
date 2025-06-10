@@ -2,16 +2,12 @@ import pygame
 import math
 import config
 
-MOVEMENT_KEYS = {
-    pygame.K_LEFT: "left",
-    pygame.K_RIGHT: "right",
-    pygame.K_UP: "up",
-    pygame.K_DOWN: "down",
-    pygame.K_a: "left",
-    pygame.K_d: "right",
-    pygame.K_w: "up",
-    pygame.K_s: "down",
-}
+
+def load_scaled(path, scale=0.5):
+    image = pygame.image.load(path)
+    width = int(image.get_width() * scale)
+    height = int(image.get_height() * scale)
+    return pygame.transform.scale(image, (width, height))
 
 
 class Sprite:
@@ -47,7 +43,7 @@ class Monster(Sprite):
     Class to implement the main character
     """
 
-    sprite = pygame.image.load("src/monster.png")
+    sprite = load_scaled("src/monster.png")
     width = sprite.get_width()
     height = sprite.get_height()
 
@@ -101,7 +97,7 @@ class Robot(Sprite):
     Class to implement enemies
     """
 
-    sprite = pygame.image.load("src/robot.png")
+    sprite = load_scaled("src/robot.png")
     width = sprite.get_width()
     height = sprite.get_height()
 
@@ -111,7 +107,7 @@ class Coin(Sprite):
     Class to implement coins
     """
 
-    sprite = pygame.image.load("src/coin.png")
+    sprite = load_scaled("src/coin.png")
     width = sprite.get_width()
     height = sprite.get_height()
 
@@ -121,6 +117,6 @@ class Door(Sprite):
     Class to implement doors
     """
 
-    sprite = pygame.image.load("src/door.png")
+    sprite = load_scaled("src/door.png")
     width = sprite.get_width()
     height = sprite.get_height()
