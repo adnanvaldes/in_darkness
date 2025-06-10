@@ -1,4 +1,5 @@
 import pygame
+import random
 
 WIDTH, HEIGHT = 800, 600
 
@@ -6,18 +7,17 @@ WIDTH, HEIGHT = 800, 600
 BLACK = (0, 0, 0)
 
 
-class Monster:
+class Sprite:
     """
-    Class to implement the main character
+    Superclass to implement common functionality
+
+    Note that the sprite PNG itself is loaded by the specific class to avoid
+    reloading the image every time a new instance is created
     """
 
-    sprite = pygame.image.load("src/monster.png")
-    width = sprite.get_width()
-    height = sprite.get_height()
-
-    def __init__(self):
-        self.x = (WIDTH / 2) - self.width
-        self.y = (HEIGHT / 2) - self.height
+    def __init__(self, x: int = 0, y: int = 0):
+        self.x = x
+        self.y = y
 
     def update(self):
         pass
@@ -26,16 +26,25 @@ class Monster:
         window.blit(self.sprite, (self.x, self.y))
 
 
-class Robot:
+class Monster(Sprite):
+    """
+    Class to implement the main character
+    """
+
+    sprite = pygame.image.load("src/monster.png")
+    width = sprite.get_width()
+    height = sprite.get_height()
+
+
+class Robot(Sprite):
     """
     Class to implement enemies
     """
 
     sprite = pygame.image.load("src/robot.png")
-    pass
 
 
-class Objects:
+class Objects(Sprite):
     """
     Class to implement objects, which the Monster can interact with
     These can be either coins or doors.
@@ -43,8 +52,6 @@ class Objects:
 
     coin_sprite = pygame.image.load("src/coin.png")
     door_sprite = pygame.image.load("src/door.png")
-
-    pass
 
 
 class InDarkness:
