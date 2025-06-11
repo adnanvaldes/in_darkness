@@ -73,29 +73,74 @@ class InDarkness:
     def draw_window(self):
         self.window.fill(config.BLACK)
 
-        score = self.font.render(f"Score: {self.score}", True, (255, 0, 0))
         if not self.game_over:
-            self.monster.render(self.window)
-            self.window.blit(score, (config.WIDTH - 100, 25))
+            self._draw_game_screen()
         else:
-            game_over_text = "YOU WON" if self.collected_all_coins else "GAME OVER"
-            score_rect = score.get_rect(
-                center=(config.WIDTH // 2, config.HEIGHT // 2 + 30)
-            )
-            self.window.blit(score, score_rect)
-            self.font = pygame.font.SysFont(
-                config.SCORE_FONT[0], config.SCORE_FONT[1] * 2
-            )
-            game_over = self.font.render("GAME OVER", True, (255, 0, 0))
-            game_over_rect = game_over.get_rect(
-                center=(config.WIDTH // 2, config.HEIGHT // 2 - 20)
-            )
-            self.window.blit(game_over, game_over_rect)
+            self._draw_game_over_screen()
 
+        # Draw all sprites
         for sprite_type in self.sprites:
             for entity in sprite_type:
                 entity.render(self.window)
+
         pygame.display.flip()
+
+    def _draw_game_screen(self):
+        self.monster.render(self.window)
+        score_text = self.font.render(f"Score: {self.score}", True, config.RED)
+        self.window.blit(score_text, (config.WIDTH - 100, 25))
+
+    def _draw_game_over_screen(self):
+        # Define fonts
+        score_font = pygame.font.SysFont(
+            config.SCORE_FONT[0], int(config.SCORE_FONT[1])
+        )
+        time_font = pygame.font.SysFont(config.SCORE_FONT[0], int(config.SCORE_FONT[1]))
+        title_font = pygame.font.SysFont(config.SCORE_FONT[0], config.SCORE_FONT[1] * 2)
+
+        # Define text surfaces
+        game_over_text = "YOU WON" if self.collected_all_coins else "GAME OVER"
+        title_surface = title_font.render(game_over_text, True, config.RED)
+        score_surface = score_font.render(f"Score: {self.score}", True, config.RED)
+        time_surface = time_font.render(
+            f"Time: {self.game_duration()}", True, config.RED
+        )
+
+        # Draw text
+        title_rect = title_surface.get_rect(center=self.align_text(1))
+        time_rect = time_surface.get_rect(center=self.align_text(2))
+        score_rect = score_surface.get_rect(center=self.align_text(3))
+
+        self.window.blit(title_surface, title_rect)
+        self.window.blit(score_surface, score_rect)
+        self.window.blit(time_surface, time_rect)
+
+    def align_text(self, line_number, lines=3, spacing=40):
+        center_x = config.WIDTH // 2
+        total_height = (lines - 1) * spacing
+        start_y = (config.HEIGHT // 2) - (total_height / 2)
+        y = start_y + (line_number * spacing)
+        return (center_x, y)
+
+    def game_duration(self):
+        milliseconds = self.current_time - self.start_time
+        total_seconds = milliseconds // 1000
+
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+
+        minutes_text = "minutes"
+        if minutes == 1:
+            minutes_text = "minute"
+
+        seconds_text = "seconds"
+        if seconds == 1:
+            seconds_text = "second"
+
+        if minutes > 0:
+            return f"{minutes} {minutes_text} {seconds} {seconds_text}"
+        else:
+            return f"{seconds} {seconds_text}"
 
     def add_robot(self):
         # Increase difficulty if score is 30
@@ -129,6 +174,7 @@ class InDarkness:
         # Update entities
         if not self.game_over:
             self.monster.update()
+            self.current_time = pygame.time.get_ticks()
         else:
             # Place player outside of screen
             self.monster.x = 500
