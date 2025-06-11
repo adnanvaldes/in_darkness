@@ -166,6 +166,17 @@ class InDarkness:
             self.coin_next_spawn = random.randint(60, 120)
             self.coin_timer = 0
 
+    def handle_robot_collisions(self):
+        total_robots = len(self.robots)
+        for i in range(total_robots):
+            for j in range(i + 1, total_robots):
+                robot1 = self.robots[i]
+                robot2 = self.robots[j]
+
+                if robot1.get_rect().colliderect(robot2.get_rect()):
+                    robot1.speed *= -1
+                    robot2.speed *= -1
+
     def update_sprites(self):
         # add entities
         self.add_robot()
@@ -207,6 +218,7 @@ class InDarkness:
                         self.touched_door = True
                         self.door_timer = pygame.time.get_ticks()
                         self.monster.speed *= 1.5
+        self.handle_robot_collisions()
 
 
 if __name__ == "__main__":
