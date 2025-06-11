@@ -52,6 +52,7 @@ class InDarkness:
         self.score = 0
         self.game_over = False
         self.collected_all_coins = False
+        self.paused = False
 
         # Sprite variables
         self.monster = Monster()
@@ -64,11 +65,13 @@ class InDarkness:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-            if event.type == pygame.KEYUP:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     exit()
                 if event.key == pygame.K_SPACE:
                     self.initialize()
+                if event.key == pygame.K_p:
+                    self.pause()
             self.monster.move(event)
 
     def draw_window(self):
@@ -177,47 +180,60 @@ class InDarkness:
                     robot2.speed *= -1
 
     def update_sprites(self):
-        # add entities
-        self.add_robot()
-        self.add_coin()
 
-        # Update entities
-        if not self.game_over:
-            self.monster.update()
-            self.current_time = pygame.time.get_ticks()
-        else:
-            # Place player outside of screen
-            self.monster.x = 500
-            self.monster.y = 500
+        if not self.paused:
+            # add entities
+            self.add_robot()
+            self.add_coin()
 
-        # Check if boosted speed needs to be reset
-        if (
-            self.door_timer > 0
-            and pygame.time.get_ticks() - self.door_timer >= config.BOOST_PERIOD
-            and self.touched_door
-        ):
-            self.monster.speed = config.PLAYER_SPEED
-            self.touched_door = False
-            self.door_timer = 0
+            # Update entities
+            if not self.game_over:
+                self.monster.update()
+                self.current_time = pygame.time.get_ticks()
+            else:
+                # Place player outside of screen
+                self.monster.x = 500
+                self.monster.y = 500
 
-        for sprite_type in self.sprites:
-            for entity in sprite_type:
-                entity.update()
-                if len(self.coins) == 0:
-                    self.collected_all_coins = True
-                    self.game_over = True
-                    break
-                if entity.get_rect().colliderect(self.monster.get_rect()):
-                    if isinstance(entity, Coin):
-                        self.coins.remove(entity)
-                        self.score += 1
-                    if isinstance(entity, Robot):
+            # Check if boosted speed needs to be reset
+            if (
+                self.door_timer > 0
+                and pygame.time.get_ticks() - self.door_timer >= config.BOOST_PERIOD
+                and self.touched_door
+            ):
+                self.monster.speed = config.PLAYER_SPEED
+                self.touched_door = False
+                self.door_timer = 0
+
+            for sprite_type in self.sprites:
+                for entity in sprite_type:
+                    entity.update()
+                    if len(self.coins) == 0:
+                        self.collected_all_coins = True
                         self.game_over = True
-                    if isinstance(entity, Door) and self.touched_door == False:
-                        self.touched_door = True
-                        self.door_timer = pygame.time.get_ticks()
-                        self.monster.speed *= 1.5
-        self.handle_robot_collisions()
+                        break
+                    if entity.get_rect().colliderect(self.monster.get_rect()):
+                        if isinstance(entity, Coin):
+                            self.coins.remove(entity)
+                            self.score += 1
+                        if isinstance(entity, Robot):
+                            self.game_over = True
+                        if isinstance(entity, Door) and self.touched_door == False:
+                            self.touched_door = True
+                            self.door_timer = pygame.time.get_ticks()
+                            self.monster.speed *= 1.5
+            self.handle_robot_collisions()
+
+    def pause(self):
+        self.paused = True
+        pause_start_time = pygame.time.get_ticks()
+
+        self.instructions()
+
+        pause_duration = pygame.time.get_ticks() - pause_start_time
+        self.start_time += pause_duration
+
+        self.paused = False
 
     def instructions(self):
 
@@ -259,7 +275,7 @@ class InDarkness:
                 "CONTROLS:",
                 "SPACE - Restart game",
                 "ESC - Quit game",
-                "TAB - See instructions/pause" "",
+                "P - See instructions/pause" "",
                 "",
                 "Press any key to start...",
             ]
