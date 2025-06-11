@@ -10,6 +10,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
 # Game variables
+PLAYER_SCALE = 1.5  # Scaling Monster sprite up to see eyes properly
 PLAYER_SPEED = 5
 ROBOT_SPEED = 4
 MAX_ROBOTS = 5
