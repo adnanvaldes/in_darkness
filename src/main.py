@@ -110,6 +110,12 @@ class InDarkness:
         for sprite_type in self.sprites:
             for entity in sprite_type:
                 entity.update()
+                if entity.get_rect().colliderect(self.monster.get_rect()):
+                    if isinstance(entity, Coin):
+                        self.coins.remove(entity)
+                        self.score += 1
+                    if isinstance(entity, Robot):
+                        self.game_over = True
 
 
 if __name__ == "__main__":
