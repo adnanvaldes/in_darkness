@@ -143,7 +143,7 @@ class InDarkness:
             return f"{seconds} {seconds_text}"
 
     def add_robot(self):
-        # Increase difficulty if score is 30
+        # Increase difficulty as score increases
         if config.SCORE_DIFFICULTY_INCREASE:
             config.MAX_ROBOTS = max(config.MAX_ROBOTS, int(self.score / 2))
         if (
