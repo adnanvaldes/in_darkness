@@ -20,9 +20,26 @@ class InDarkness:
         self.window = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("In Darkness")
         pygame.display.set_icon(Monster.sprite)
-        self.font = pygame.font.SysFont(*config.SCORE_FONT)
 
+        self.initialize()
+        self.main_loop()
+
+    def main_loop(self):
+        """
+        Main loop of the game
+        """
+        while True:
+            self.robot_timer += 1
+            self.coin_timer += 1
+            self.door_timer += 1
+            self.check_events()
+            self.update_sprites()
+            self.draw_window()
+            self.clock.tick(60)
+
+    def initialize(self):
         # Game variables
+        self.font = pygame.font.SysFont(*config.SCORE_FONT)
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
         self.robot_next_spawn = random.randint(0, 120)
@@ -42,25 +59,15 @@ class InDarkness:
         self.doors = [Door() for door in range(config.MAX_DOORS)]
         self.sprites = [self.robots, self.coins, self.doors]
 
-        self.main_loop()
-
-    def main_loop(self):
-        """
-        Main loop of the game
-        """
-        while True:
-            self.robot_timer += 1
-            self.coin_timer += 1
-            self.door_timer += 1
-            self.check_events()
-            self.update_sprites()
-            self.draw_window()
-            self.clock.tick(60)
-
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    exit()
+                if event.key == pygame.K_SPACE:
+                    self.initialize()
             self.monster.move(event)
 
     def draw_window(self):
