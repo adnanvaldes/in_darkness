@@ -17,6 +17,7 @@ MAX_DOORS = 1
 # First number is boost period in seconds; second one is to convert to miliseconds to patch Pygame's clock
 BOOST_PERIOD = (10) * 1000
 SCORE_FONT = ("Arial", 24)
+SCORE_DIFFICULTY_INCREASE = True
 
 # Player controls
 MOVEMENT_KEYS = {

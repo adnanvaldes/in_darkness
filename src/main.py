@@ -98,12 +98,15 @@ class InDarkness:
         pygame.display.flip()
 
     def add_robot(self):
+        # Increase difficulty if score is 30
+        if config.SCORE_DIFFICULTY_INCREASE:
+            config.MAX_ROBOTS = max(config.MAX_ROBOTS, int(self.score / 2))
         if (
             len(self.robots) < config.MAX_ROBOTS
             and self.robot_timer >= self.robot_next_spawn
         ):
             self.robots.append(Robot())
-            self.robot_robot_next_spawn = random.randint(30, 120)
+            self.robot_next_spawn = random.randint(30, 120)
             self.robot_timer = 0
 
     def add_coin(self):
