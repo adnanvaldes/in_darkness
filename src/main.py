@@ -24,8 +24,13 @@ class InDarkness:
 
         # Game variables
         self.clock = pygame.time.Clock()
-        self.next_spawn = random.randint(0, 120)
-        self.timer = 0
+        self.start_time = pygame.time.get_ticks()
+        self.robot_next_spawn = random.randint(0, 120)
+        self.coin_next_spawn = random.randint(60, 180)
+        self.robot_timer = 0
+        self.coin_timer = 0
+        self.door_timer = 0
+        self.touched_door = False
         self.score = 0
         self.game_over = False
 
@@ -45,6 +50,7 @@ class InDarkness:
         while True:
             self.robot_timer += 1
             self.coin_timer += 1
+            self.door_timer += 1
             self.check_events()
             self.update_sprites()
             self.draw_window()
@@ -107,6 +113,17 @@ class InDarkness:
 
         # Update entities
         self.monster.update()
+
+        # Check if boosted speed needs to be reset
+        if (
+            self.door_timer > 0
+            and pygame.time.get_ticks() - self.door_timer >= config.BOOST_PERIOD
+            and self.touched_door
+        ):
+            self.monster.speed = config.PLAYER_SPEED
+            self.touched_door = False
+            self.door_timer = 0
+
         for sprite_type in self.sprites:
             for entity in sprite_type:
                 entity.update()
@@ -116,6 +133,10 @@ class InDarkness:
                         self.score += 1
                     if isinstance(entity, Robot):
                         self.game_over = True
+                    if isinstance(entity, Door) and self.touched_door == False:
+                        self.touched_door = True
+                        self.door_timer = pygame.time.get_ticks()
+                        self.monster.speed *= 1.5
 
 
 if __name__ == "__main__":

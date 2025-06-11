@@ -14,6 +14,8 @@ ROBOT_SPEED = 4
 MAX_ROBOTS = 5
 MAX_COINS = 10
 MAX_DOORS = 1
+# First number is boost period in seconds; second one is to convert to miliseconds to patch Pygame's clock
+BOOST_PERIOD = (10) * 1000
 SCORE_FONT = ("Arial", 24)
 
 # Player controls
