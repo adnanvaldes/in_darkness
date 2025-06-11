@@ -50,8 +50,7 @@ class Monster(Sprite):
 
     sprite = pygame.image.load("src/monster.png")
     scaled_sprite = load_scaled("src/monster.png")
-    width = sprite.get_width()
-    height = sprite.get_height()
+    width, height = sprite.get_size()
 
     def __init__(self):
         self.x = config.WIDTH / 2 - Monster.width
@@ -105,8 +104,7 @@ class Robot(Sprite):
     """
 
     sprite = load_scaled("src/robot.png")
-    width = sprite.get_width()
-    height = sprite.get_height()
+    width, height = sprite.get_size()
 
     def __init__(self):
         self.speed = config.ROBOT_SPEED
@@ -146,8 +144,7 @@ class Coin(Sprite):
     """
 
     sprite = load_scaled("src/coin.png")
-    width = sprite.get_width()
-    height = sprite.get_height()
+    width, height = sprite.get_size()
 
 
 class Door(Sprite):
@@ -156,5 +153,4 @@ class Door(Sprite):
     """
 
     sprite = load_scaled("src/door.png")
-    width = sprite.get_width()
-    height = sprite.get_height()
+    width, height = sprite.get_size()
