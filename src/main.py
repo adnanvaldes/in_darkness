@@ -21,6 +21,7 @@ class InDarkness:
         pygame.display.set_caption("In Darkness")
         pygame.display.set_icon(Monster.sprite)
 
+        self.instructions()
         self.initialize()
         self.main_loop()
 
@@ -217,6 +218,76 @@ class InDarkness:
                         self.door_timer = pygame.time.get_ticks()
                         self.monster.speed *= 1.5
         self.handle_robot_collisions()
+
+    def instructions(self):
+
+        title_font = pygame.font.SysFont("Arial", 48)
+        instruction_font = pygame.font.SysFont("Arial", 24)
+        small_font = pygame.font.SysFont("Arial", 18)
+
+        waiting_for_key = True
+        clock = pygame.time.Clock()
+
+        while waiting_for_key:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
+                    else:
+                        waiting_for_key = False
+
+            self.window.fill(config.BLACK)
+
+            title_surface = title_font.render("IN DARKNESS", True, config.RED)
+            title_rect = title_surface.get_rect(center=(self.width // 2, 80))
+            self.window.blit(title_surface, title_rect)
+
+            instructions = [
+                "HOW TO PLAY:",
+                "",
+                "MOVEMENT:",
+                "Arrow Keys or WASD - Move your character",
+                "",
+                "OBJECTIVE:",
+                "Collect all coins while avoiding robots",
+                "",
+                "POWER-UPS:",
+                "Blue squares (Doors) - Boost your speed temporarily",
+                "",
+                "CONTROLS:",
+                "SPACE - Restart game",
+                "ESC - Quit game",
+                "TAB - See instructions/pause" "",
+                "",
+                "Press any key to start...",
+            ]
+
+            y_offset = 140
+            line_spacing = 25
+
+            for line in instructions:
+                if line == "HOW TO PLAY:" or line == "Press any key to start...":
+                    # Large font for header
+                    surface = instruction_font.render(line, True, config.RED)
+                elif line in ["MOVEMENT:", "OBJECTIVE:", "POWER-UPS:", "CONTROLS:"]:
+                    # Use medium font for sections
+                    surface = instruction_font.render(line, True, config.YELLOW)
+                elif line == "":
+                    # Skip empty lines but maintain spacing
+                    y_offset += line_spacing
+                    continue  # Without continue text overflows screen
+                else:
+                    # Small font for details
+                    surface = small_font.render(line, True, config.GRAY)
+
+                rect = surface.get_rect(center=(self.width // 2, y_offset))
+                self.window.blit(surface, rect)
+                y_offset += line_spacing
+
+            pygame.display.flip()
+        clock.tick(30)
 
 
 if __name__ == "__main__":
