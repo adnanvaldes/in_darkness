@@ -20,6 +20,7 @@ class InDarkness:
         self.window = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("In Darkness")
         pygame.display.set_icon(Monster.sprite)
+        self.font = pygame.font.SysFont(*config.SCORE_FONT)
 
         # Game variables
         self.clock = pygame.time.Clock()
@@ -30,9 +31,9 @@ class InDarkness:
 
         # Sprite variables
         self.monster = Monster()
-        self.robots = [Robot() for robot in range(config.MAX_ROBOTS + 1)]
-        self.coins = [Coin() for coin in range(config.MAX_COINS + 1)]
-        self.doors = [Door() for door in range(config.MAX_DOORS + 1)]
+        self.robots = [Robot() for robot in range(config.MAX_ROBOTS)]
+        self.coins = [Coin() for coin in range(config.MAX_COINS)]
+        self.doors = [Door() for door in range(config.MAX_DOORS)]
         self.sprites = [self.robots, self.coins, self.doors]
 
         self.main_loop()
@@ -42,7 +43,8 @@ class InDarkness:
         Main loop of the game
         """
         while True:
-            self.timer += 1
+            self.robot_timer += 1
+            self.coin_timer += 1
             self.check_events()
             self.update_sprites()
             self.draw_window()
@@ -81,17 +83,27 @@ class InDarkness:
         pygame.display.flip()
 
     def add_robot(self):
-        if len(self.robots) < config.MAX_ROBOTS and self.timer >= self.next_spawn:
+        if (
+            len(self.robots) < config.MAX_ROBOTS
+            and self.robot_timer >= self.robot_next_spawn
+        ):
             self.robots.append(Robot())
-            self.reset_spawn_timer()
+            self.robot_robot_next_spawn = random.randint(30, 120)
+            self.robot_timer = 0
 
-    def reset_spawn_timer(self):
-        self.next_spawn = random.randint(30, 120)
-        self.timer = 0
+    def add_coin(self):
+        if (
+            len(self.coins) < config.MAX_COINS
+            and self.coin_timer >= self.coin_next_spawn
+        ):
+            self.coins.append(Coin())
+            self.coin_next_spawn = random.randint(60, 120)
+            self.coin_timer = 0
 
     def update_sprites(self):
         # add entities
         self.add_robot()
+        self.add_coin()
 
         # Update entities
         self.monster.update()
