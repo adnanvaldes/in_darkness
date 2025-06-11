@@ -87,7 +87,7 @@ class InDarkness:
             self.window.fill(config.BLACK)
 
             title_surface = title_font.render("IN DARKNESS", True, config.RED)
-            title_rect = title_surface.get_rect(center=(self.width // 2, 80))
+            title_rect = title_surface.get_rect(center=(self.width // 2, 70))
             self.window.blit(title_surface, title_rect)
 
             instructions = [
@@ -107,6 +107,7 @@ class InDarkness:
                 "ESC - Quit game",
                 "P - See instructions/pause" "",
                 "",
+                "Source code at https://github.com/adnanvaldes/in_darkness",
                 "Press any key to start...",
             ]
 
