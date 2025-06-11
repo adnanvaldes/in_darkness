@@ -89,6 +89,8 @@ class InDarkness:
         self.monster.render(self.window)
         score_text = self.font.render(f"Score: {self.score}", True, config.RED)
         self.window.blit(score_text, (config.WIDTH - 100, 25))
+        # Draw rectangle over monster eyes for testing
+        # pygame.draw.rect(self.window, config.RED, self.monster.get_collision_rect(), 1)
 
     def _draw_game_over_screen(self):
         # Define fonts

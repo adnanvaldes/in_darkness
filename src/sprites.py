@@ -97,6 +97,24 @@ class Monster(Sprite):
             self.x = self.x_on_screen(new_x)
             self.y = self.y_on_screen(new_y)
 
+    def get_rect(self):
+        # Numbers found experimentally by drawing a rectangle in game
+        EYES_OFFSET_X = 18
+        EYES_OFFSET_Y = 15
+        EYES_WIDTH = 18
+        EYES_HEIGHT = 7
+        scaled_offset_x = EYES_OFFSET_X * config.PLAYER_SCALE
+        scaled_offset_y = EYES_OFFSET_Y * config.PLAYER_SCALE
+        scaled_eyes_width = EYES_WIDTH * config.PLAYER_SCALE
+        scaled_eyes_height = EYES_HEIGHT * config.PLAYER_SCALE
+
+        collision_x = self.x + scaled_offset_x
+        collision_y = self.y + scaled_offset_y
+
+        return pygame.Rect(
+            collision_x, collision_y, scaled_eyes_width, scaled_eyes_height
+        )
+
 
 class Robot(Sprite):
     """
