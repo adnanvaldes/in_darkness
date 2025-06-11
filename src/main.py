@@ -26,6 +26,7 @@ class InDarkness:
         self.next_spawn = random.randint(0, 120)
         self.timer = 0
         self.score = 0
+        self.game_over = False
 
         # Sprite variables
         self.monster = Monster()
@@ -55,7 +56,25 @@ class InDarkness:
 
     def draw_window(self):
         self.window.fill(config.BLACK)
-        self.monster.render(self.window)
+
+        score = self.font.render(f"Score: {self.score}", True, (255, 0, 0))
+        if not self.game_over:
+            self.monster.render(self.window)
+            self.window.blit(score, (config.WIDTH - 100, 25))
+        else:
+            score_rect = score.get_rect(
+                center=(config.WIDTH // 2, config.HEIGHT // 2 + 30)
+            )
+            self.window.blit(score, score_rect)
+            self.font = pygame.font.SysFont(
+                config.SCORE_FONT[0], config.SCORE_FONT[1] * 2
+            )
+            game_over_text = self.font.render("GAME OVER", True, (255, 0, 0))
+            game_over_rect = game_over_text.get_rect(
+                center=(config.WIDTH // 2, config.HEIGHT // 2 - 20)
+            )
+            self.window.blit(game_over_text, game_over_rect)
+
         for sprite_type in self.sprites:
             for entity in sprite_type:
                 entity.render(self.window)
