@@ -23,14 +23,15 @@ class InDarkness:
 
         # Game variables
         self.clock = pygame.time.Clock()
-        self.timer = 0
         self.next_spawn = random.randint(0, 120)
+        self.timer = 0
+        self.score = 0
 
         # Sprite variables
         self.monster = Monster()
-        self.robots = []
-        self.coins = []
-        self.doors = []
+        self.robots = [Robot() for robot in range(config.MAX_ROBOTS + 1)]
+        self.coins = [Coin() for coin in range(config.MAX_COINS + 1)]
+        self.doors = [Door() for door in range(config.MAX_DOORS + 1)]
         self.sprites = [self.robots, self.coins, self.doors]
 
         self.main_loop()

@@ -30,6 +30,9 @@ class Sprite:
     def render(self, window):
         window.blit(self.sprite, (self.x, self.y))
 
+    def update(self):
+        pass
+
     def x_on_screen(self, new_x):
         return max(0, min(new_x, config.WIDTH - type(self).width))
 
