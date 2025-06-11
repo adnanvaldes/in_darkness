@@ -33,6 +33,7 @@ class InDarkness:
         self.touched_door = False
         self.score = 0
         self.game_over = False
+        self.collected_all_coins = False
 
         # Sprite variables
         self.monster = Monster()
@@ -70,6 +71,7 @@ class InDarkness:
             self.monster.render(self.window)
             self.window.blit(score, (config.WIDTH - 100, 25))
         else:
+            game_over_text = "YOU WON" if self.collected_all_coins else "GAME OVER"
             score_rect = score.get_rect(
                 center=(config.WIDTH // 2, config.HEIGHT // 2 + 30)
             )
@@ -77,11 +79,11 @@ class InDarkness:
             self.font = pygame.font.SysFont(
                 config.SCORE_FONT[0], config.SCORE_FONT[1] * 2
             )
-            game_over_text = self.font.render("GAME OVER", True, (255, 0, 0))
-            game_over_rect = game_over_text.get_rect(
+            game_over = self.font.render("GAME OVER", True, (255, 0, 0))
+            game_over_rect = game_over.get_rect(
                 center=(config.WIDTH // 2, config.HEIGHT // 2 - 20)
             )
-            self.window.blit(game_over_text, game_over_rect)
+            self.window.blit(game_over, game_over_rect)
 
         for sprite_type in self.sprites:
             for entity in sprite_type:
@@ -98,6 +100,9 @@ class InDarkness:
             self.robot_timer = 0
 
     def add_coin(self):
+        if self.game_over:
+            config.MAX_COINS = 10000
+
         if (
             len(self.coins) < config.MAX_COINS
             and self.coin_timer >= self.coin_next_spawn
@@ -112,7 +117,12 @@ class InDarkness:
         self.add_coin()
 
         # Update entities
-        self.monster.update()
+        if not self.game_over:
+            self.monster.update()
+        else:
+            # Place player outside of screen
+            self.monster.x = 500
+            self.monster.y = 500
 
         # Check if boosted speed needs to be reset
         if (
@@ -128,6 +138,7 @@ class InDarkness:
             for entity in sprite_type:
                 entity.update()
                 if len(self.coins) == 0:
+                    self.collected_all_coins = True
                     self.game_over = True
                     break
                 if entity.get_rect().colliderect(self.monster.get_rect()):
