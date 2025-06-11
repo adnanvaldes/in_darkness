@@ -143,25 +143,21 @@ class InDarkness:
             return f"{seconds} {seconds_text}"
 
     def add_robot(self):
-        # Increase difficulty as score increases
-        if config.SCORE_DIFFICULTY_INCREASE:
-            config.MAX_ROBOTS = max(config.MAX_ROBOTS, int(self.score / 2))
-        if (
-            len(self.robots) < config.MAX_ROBOTS
-            and self.robot_timer >= self.robot_next_spawn
-        ):
+        max_robots = (
+            max(config.MAX_ROBOTS, int(self.score / 2))
+            if config.SCORE_DIFFICULTY_INCREASE
+            else config.MAX_ROBOTS
+        )
+
+        if len(self.robots) < max_robots and self.robot_timer >= self.robot_next_spawn:
             self.robots.append(Robot())
             self.robot_next_spawn = random.randint(30, 120)
             self.robot_timer = 0
 
     def add_coin(self):
-        if self.game_over:
-            config.MAX_COINS = 10000
+        max_coins = 10000 if self.game_over else config.MAX_COINS
 
-        if (
-            len(self.coins) < config.MAX_COINS
-            and self.coin_timer >= self.coin_next_spawn
-        ):
+        if len(self.coins) < max_coins and self.coin_timer >= self.coin_next_spawn:
             self.coins.append(Coin())
             self.coin_next_spawn = random.randint(60, 120)
             self.coin_timer = 0
