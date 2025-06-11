@@ -52,6 +52,16 @@ class Monster(Sprite):
     scaled_sprite = load_scaled("src/monster.png")
     width, height = scaled_sprite.get_size()
 
+    # Numbers found experimentally by drawing a rectangle in game over the monster. It will not work if the scale is modified.
+    EYES_OFFSET_X = 18
+    EYES_OFFSET_Y = 15
+    EYES_WIDTH = 18
+    EYES_HEIGHT = 7
+    OFFSET_X = EYES_OFFSET_X * config.PLAYER_SCALE
+    OFFSET_Y = EYES_OFFSET_Y * config.PLAYER_SCALE
+    SCALED_EYES_WIDTH = EYES_WIDTH * config.PLAYER_SCALE
+    SCALED_EYES_HEIGHT = EYES_HEIGHT * config.PLAYER_SCALE
+
     def __init__(self):
         self.x = config.WIDTH / 2 - Monster.width
         self.y = config.HEIGHT / 2 - Monster.height
@@ -97,22 +107,23 @@ class Monster(Sprite):
             self.x = self.x_on_screen(new_x)
             self.y = self.y_on_screen(new_y)
 
-    def get_rect(self):
-        # Numbers found experimentally by drawing a rectangle in game
-        EYES_OFFSET_X = 18
-        EYES_OFFSET_Y = 15
-        EYES_WIDTH = 18
-        EYES_HEIGHT = 7
-        scaled_offset_x = EYES_OFFSET_X * config.PLAYER_SCALE
-        scaled_offset_y = EYES_OFFSET_Y * config.PLAYER_SCALE
-        scaled_eyes_width = EYES_WIDTH * config.PLAYER_SCALE
-        scaled_eyes_height = EYES_HEIGHT * config.PLAYER_SCALE
+    def x_on_screen(self, new_x):
+        new_width = self.OFFSET_X + self.SCALED_EYES_WIDTH
+        return max(-self.OFFSET_X, min(new_x, config.WIDTH - new_width))
 
-        collision_x = self.x + scaled_offset_x
-        collision_y = self.y + scaled_offset_y
+    def y_on_screen(self, new_y):
+        new_height = self.OFFSET_Y + self.SCALED_EYES_HEIGHT
+        return max(-self.OFFSET_Y, min(new_y, config.HEIGHT - new_height))
+
+    def get_rect(self):
+        collision_x = self.x + self.OFFSET_X
+        collision_y = self.y + self.OFFSET_Y
 
         return pygame.Rect(
-            collision_x, collision_y, scaled_eyes_width, scaled_eyes_height
+            collision_x,
+            collision_y,
+            self.SCALED_EYES_WIDTH,
+            self.SCALED_EYES_HEIGHT,
         )
 
 
