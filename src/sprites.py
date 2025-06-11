@@ -48,7 +48,8 @@ class Monster(Sprite):
     Class to implement the main character
     """
 
-    sprite = load_scaled("src/monster.png")
+    sprite = pygame.image.load("src/monster.png")
+    scaled_sprite = load_scaled("src/monster.png")
     width = sprite.get_width()
     height = sprite.get_height()
 
