@@ -39,7 +39,9 @@ class InDarkness:
             self.clock.tick(60)
 
     def initialize(self):
-        # Game variables
+        """
+        Initializes the game state. Also used when resetting the game.
+        """
         self.font = pygame.font.SysFont(*config.SCORE_FONT)
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
@@ -61,7 +63,98 @@ class InDarkness:
         self.doors = [Door() for door in range(config.MAX_DOORS)]
         self.sprites = [self.robots, self.coins, self.doors]
 
+    def instructions(self):
+        """
+        Print game instructions
+        """
+        title_font = pygame.font.SysFont("Arial", 48)
+        instruction_font = pygame.font.SysFont("Arial", 24)
+        small_font = pygame.font.SysFont("Arial", 18)
+
+        waiting_for_key = True
+        clock = pygame.time.Clock()
+
+        while waiting_for_key:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
+                    else:
+                        waiting_for_key = False
+
+            self.window.fill(config.BLACK)
+
+            title_surface = title_font.render("IN DARKNESS", True, config.RED)
+            title_rect = title_surface.get_rect(center=(self.width // 2, 80))
+            self.window.blit(title_surface, title_rect)
+
+            instructions = [
+                "HOW TO PLAY:",
+                "",
+                "MOVEMENT:",
+                "Arrow Keys or WASD - Move your character",
+                "",
+                "OBJECTIVE:",
+                "Collect all coins while avoiding robots",
+                "",
+                "POWER-UPS:",
+                "Blue squares (Doors) - Boost your speed temporarily",
+                "",
+                "CONTROLS:",
+                "SPACE - Restart game",
+                "ESC - Quit game",
+                "P - See instructions/pause" "",
+                "",
+                "Press any key to start...",
+            ]
+
+            y_offset = 140
+            line_spacing = 25
+
+            for line in instructions:
+                if line == "HOW TO PLAY:" or line == "Press any key to start...":
+                    # Large font for header
+                    surface = instruction_font.render(line, True, config.RED)
+                elif line in ["MOVEMENT:", "OBJECTIVE:", "POWER-UPS:", "CONTROLS:"]:
+                    # Use medium font for sections
+                    surface = instruction_font.render(line, True, config.YELLOW)
+                elif line == "":
+                    # Skip empty lines but maintain spacing
+                    y_offset += line_spacing
+                    continue  # Without continue text overflows screen
+                else:
+                    # Small font for details
+                    surface = small_font.render(line, True, config.GRAY)
+
+                rect = surface.get_rect(center=(self.width // 2, y_offset))
+                self.window.blit(surface, rect)
+                y_offset += line_spacing
+
+            pygame.display.flip()
+        clock.tick(30)
+
+    def pause(self):
+        """
+        Stop main loop from running and show instructions agian.
+        This method also keeps track of how long the game was paused
+        so that pauses don't affect play time
+        """
+        self.paused = True
+        pause_start_time = pygame.time.get_ticks()
+
+        self.instructions()
+
+        pause_duration = pygame.time.get_ticks() - pause_start_time
+        self.start_time += pause_duration
+
+        self.paused = False
+
     def check_events(self):
+        """
+        Handle keyboard inputs
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -73,6 +166,84 @@ class InDarkness:
                 if event.key == pygame.K_p:
                     self.pause()
             self.monster.move(event)
+
+    def update_sprites(self):
+        """
+        Update position of all sprites in the game and check for colissions
+        """
+        if not self.paused:
+            # add entities
+            self.add_robot()
+            self.add_coin()
+
+            # Update entities
+            if not self.game_over:
+                self.monster.update()
+                self.current_time = pygame.time.get_ticks()
+            else:
+                # Place player outside of screen
+                self.monster.x = 500
+                self.monster.y = 500
+
+            # Check if boosted speed needs to be reset
+            if (
+                self.door_timer > 0
+                and pygame.time.get_ticks() - self.door_timer >= config.BOOST_PERIOD
+                and self.touched_door
+            ):
+                self.monster.speed = config.PLAYER_SPEED
+                self.touched_door = False
+                self.door_timer = 0
+
+            for sprite_type in self.sprites:
+                for entity in sprite_type:
+                    entity.update()
+                    if len(self.coins) == 0:
+                        self.collected_all_coins = True
+                        self.game_over = True
+                        break
+                    if entity.get_rect().colliderect(self.monster.get_rect()):
+                        if isinstance(entity, Coin):
+                            self.coins.remove(entity)
+                            self.score += 1
+                        if isinstance(entity, Robot):
+                            self.game_over = True
+                        if isinstance(entity, Door) and self.touched_door == False:
+                            self.touched_door = True
+                            self.door_timer = pygame.time.get_ticks()
+                            self.monster.speed *= 1.5
+            self.handle_robot_collisions()
+
+    def add_robot(self):
+        max_robots = (
+            max(config.MAX_ROBOTS, int(self.score / 2))
+            if config.SCORE_DIFFICULTY_INCREASE
+            else config.MAX_ROBOTS
+        )
+
+        if len(self.robots) < max_robots and self.robot_timer >= self.robot_next_spawn:
+            self.robots.append(Robot())
+            self.robot_next_spawn = random.randint(30, 120)
+            self.robot_timer = 0
+
+    def add_coin(self):
+        max_coins = 10000 if self.game_over else config.MAX_COINS
+
+        if len(self.coins) < max_coins and self.coin_timer >= self.coin_next_spawn:
+            self.coins.append(Coin())
+            self.coin_next_spawn = random.randint(60, 120)
+            self.coin_timer = 0
+
+    def handle_robot_collisions(self):
+        total_robots = len(self.robots)
+        for i in range(total_robots):
+            for j in range(i + 1, total_robots):
+                robot1 = self.robots[i]
+                robot2 = self.robots[j]
+
+                if robot1.get_rect().colliderect(robot2.get_rect()):
+                    robot1.speed *= -1
+                    robot2.speed *= -1
 
     def draw_window(self):
         self.window.fill(config.BLACK)
@@ -147,163 +318,6 @@ class InDarkness:
             return f"{minutes} {minutes_text} {seconds} {seconds_text}"
         else:
             return f"{seconds} {seconds_text}"
-
-    def add_robot(self):
-        max_robots = (
-            max(config.MAX_ROBOTS, int(self.score / 2))
-            if config.SCORE_DIFFICULTY_INCREASE
-            else config.MAX_ROBOTS
-        )
-
-        if len(self.robots) < max_robots and self.robot_timer >= self.robot_next_spawn:
-            self.robots.append(Robot())
-            self.robot_next_spawn = random.randint(30, 120)
-            self.robot_timer = 0
-
-    def add_coin(self):
-        max_coins = 10000 if self.game_over else config.MAX_COINS
-
-        if len(self.coins) < max_coins and self.coin_timer >= self.coin_next_spawn:
-            self.coins.append(Coin())
-            self.coin_next_spawn = random.randint(60, 120)
-            self.coin_timer = 0
-
-    def handle_robot_collisions(self):
-        total_robots = len(self.robots)
-        for i in range(total_robots):
-            for j in range(i + 1, total_robots):
-                robot1 = self.robots[i]
-                robot2 = self.robots[j]
-
-                if robot1.get_rect().colliderect(robot2.get_rect()):
-                    robot1.speed *= -1
-                    robot2.speed *= -1
-
-    def update_sprites(self):
-
-        if not self.paused:
-            # add entities
-            self.add_robot()
-            self.add_coin()
-
-            # Update entities
-            if not self.game_over:
-                self.monster.update()
-                self.current_time = pygame.time.get_ticks()
-            else:
-                # Place player outside of screen
-                self.monster.x = 500
-                self.monster.y = 500
-
-            # Check if boosted speed needs to be reset
-            if (
-                self.door_timer > 0
-                and pygame.time.get_ticks() - self.door_timer >= config.BOOST_PERIOD
-                and self.touched_door
-            ):
-                self.monster.speed = config.PLAYER_SPEED
-                self.touched_door = False
-                self.door_timer = 0
-
-            for sprite_type in self.sprites:
-                for entity in sprite_type:
-                    entity.update()
-                    if len(self.coins) == 0:
-                        self.collected_all_coins = True
-                        self.game_over = True
-                        break
-                    if entity.get_rect().colliderect(self.monster.get_rect()):
-                        if isinstance(entity, Coin):
-                            self.coins.remove(entity)
-                            self.score += 1
-                        if isinstance(entity, Robot):
-                            self.game_over = True
-                        if isinstance(entity, Door) and self.touched_door == False:
-                            self.touched_door = True
-                            self.door_timer = pygame.time.get_ticks()
-                            self.monster.speed *= 1.5
-            self.handle_robot_collisions()
-
-    def pause(self):
-        self.paused = True
-        pause_start_time = pygame.time.get_ticks()
-
-        self.instructions()
-
-        pause_duration = pygame.time.get_ticks() - pause_start_time
-        self.start_time += pause_duration
-
-        self.paused = False
-
-    def instructions(self):
-
-        title_font = pygame.font.SysFont("Arial", 48)
-        instruction_font = pygame.font.SysFont("Arial", 24)
-        small_font = pygame.font.SysFont("Arial", 18)
-
-        waiting_for_key = True
-        clock = pygame.time.Clock()
-
-        while waiting_for_key:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        exit()
-                    else:
-                        waiting_for_key = False
-
-            self.window.fill(config.BLACK)
-
-            title_surface = title_font.render("IN DARKNESS", True, config.RED)
-            title_rect = title_surface.get_rect(center=(self.width // 2, 80))
-            self.window.blit(title_surface, title_rect)
-
-            instructions = [
-                "HOW TO PLAY:",
-                "",
-                "MOVEMENT:",
-                "Arrow Keys or WASD - Move your character",
-                "",
-                "OBJECTIVE:",
-                "Collect all coins while avoiding robots",
-                "",
-                "POWER-UPS:",
-                "Blue squares (Doors) - Boost your speed temporarily",
-                "",
-                "CONTROLS:",
-                "SPACE - Restart game",
-                "ESC - Quit game",
-                "P - See instructions/pause" "",
-                "",
-                "Press any key to start...",
-            ]
-
-            y_offset = 140
-            line_spacing = 25
-
-            for line in instructions:
-                if line == "HOW TO PLAY:" or line == "Press any key to start...":
-                    # Large font for header
-                    surface = instruction_font.render(line, True, config.RED)
-                elif line in ["MOVEMENT:", "OBJECTIVE:", "POWER-UPS:", "CONTROLS:"]:
-                    # Use medium font for sections
-                    surface = instruction_font.render(line, True, config.YELLOW)
-                elif line == "":
-                    # Skip empty lines but maintain spacing
-                    y_offset += line_spacing
-                    continue  # Without continue text overflows screen
-                else:
-                    # Small font for details
-                    surface = small_font.render(line, True, config.GRAY)
-
-                rect = surface.get_rect(center=(self.width // 2, y_offset))
-                self.window.blit(surface, rect)
-                y_offset += line_spacing
-
-            pygame.display.flip()
-        clock.tick(30)
 
 
 if __name__ == "__main__":
