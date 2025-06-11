@@ -127,6 +127,9 @@ class InDarkness:
         for sprite_type in self.sprites:
             for entity in sprite_type:
                 entity.update()
+                if len(self.coins) == 0:
+                    self.game_over = True
+                    break
                 if entity.get_rect().colliderect(self.monster.get_rect()):
                     if isinstance(entity, Coin):
                         self.coins.remove(entity)
