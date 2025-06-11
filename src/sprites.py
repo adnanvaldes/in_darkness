@@ -108,18 +108,18 @@ class Robot(Sprite):
         self.speed = config.ROBOT_SPEED
         self.patrol = random.choice(["x_axis", "y_axis"])
 
-        spawn_edge = random.choice(["top", "bottom", "left", "right"])
+        edge = random.choice(["top", "bottom", "left", "right"])
 
-        if spawn_edge == "top":
+        if edge == "top":
             self.x = random.randint(0, config.WIDTH - self.width)
             self.y = 0
-        elif spawn_edge == "bottom":
+        elif edge == "bottom":
             self.x = random.randint(0, config.WIDTH - self.width)
             self.y = config.HEIGHT - self.height
-        elif spawn_edge == "left":
+        elif edge == "left":
             self.x = 0
             self.y = random.randint(0, config.HEIGHT - self.height)
-        elif spawn_edge == "right":
+        elif edge == "right":
             self.x = config.WIDTH - self.width
             self.y = random.randint(0, config.HEIGHT - self.height)
 
