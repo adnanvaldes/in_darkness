@@ -1,8 +1,8 @@
 import pygame
 import random
 
-from sprites import Monster, Robot, Door, Coin
-import config
+from in_darkness.sprites import Monster, Robot, Door, Coin
+import in_darkness.config
 
 
 class InDarkness:
@@ -321,5 +321,9 @@ class InDarkness:
             return f"{seconds} {seconds_text}"
 
 
-if __name__ == "__main__":
+def main():
     InDarkness()
+
+
+if __name__ == "__main__":
+    main()

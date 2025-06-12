@@ -2,7 +2,7 @@ import pygame
 import math
 import random
 
-import config
+from in_darkness import config
 
 
 def load_scaled(path, scale=0.5):
@@ -48,8 +48,8 @@ class Monster(Sprite):
     Class to implement the main character
     """
 
-    sprite = load_scaled("src/monster.png", config.PLAYER_SCALE)
-    scaled_sprite = load_scaled("src/monster.png")
+    sprite = load_scaled("in_darkness/monster.png", config.PLAYER_SCALE)
+    scaled_sprite = load_scaled("in_darkness/monster.png")
     width, height = scaled_sprite.get_size()
 
     # Numbers found experimentally by drawing a rectangle in game over the monster. It will not work if the scale is modified.
@@ -132,7 +132,7 @@ class Robot(Sprite):
     Class to implement enemies
     """
 
-    sprite = load_scaled("src/robot.png")
+    sprite = load_scaled("in_darkness/robot.png")
     width, height = sprite.get_size()
 
     def __init__(self):
@@ -172,7 +172,7 @@ class Coin(Sprite):
     Class to implement coins
     """
 
-    sprite = load_scaled("src/coin.png")
+    sprite = load_scaled("in_darkness/coin.png")
     width, height = sprite.get_size()
 
 
@@ -181,5 +181,5 @@ class Door(Sprite):
     Class to implement doors
     """
 
-    sprite = load_scaled("src/door.png")
+    sprite = load_scaled("in_darkness/door.png")
     width, height = sprite.get_size()
