@@ -1,8 +1,8 @@
 import pygame
 import random
 
-from in_darkness.sprites import Monster, Robot, Door, Coin
-import in_darkness.config
+from sprites import Monster, Robot, Door, Coin
+import config
 
 
 class InDarkness:

@@ -76,6 +76,7 @@ pip install pygame
 ### Run the game
 
 ```bash
+cd in_darkness/in_darkness
 python main.py
 ```
 
