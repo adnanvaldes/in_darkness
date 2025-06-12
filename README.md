@@ -1,6 +1,6 @@
 # In Darkness
 
-**In Darkness** is a 2D arcade-style survival game developed using Python and Pygame. Created as the final project for the [University of Helsinki's Advanced Programming course](https://mooc.fi), the game challenges players to collect coins, avoid patrolling robots, and navigate the darkness with occasional speed boosts.
+**In Darkness** is a 2D arcade-style survival game developed using Python and Pygame. Created as the final project for the [University of Helsinki's Advanced Programming course](https://programming-25.mooc.fi/), the game challenges players to collect coins, avoid patrolling robots, and navigate the darkness with occasional speed boosts.
 
 ---
 
@@ -87,14 +87,7 @@ This game was created as the final project for:
 
 **Advanced Programming**
 University of Helsinki
-📘 [https://mooc.fi](https://mooc.fi)
-
----
-
-## 👤 Author
-
-**Adnan Valdes**
-University of Helsinki – Advanced Programming (2025)
+📘 [Programming 25](https://programming-25.mooc.fi/)
 
 ---
 
